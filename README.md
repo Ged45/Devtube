@@ -157,21 +157,7 @@ devtube/
 
 ---
 
-# ⚙ Environment Variables
 
-Create a `.env` file inside the backend directory.
-
-```env
-PORT=5000
-
-DATABASE_URL=postgresql://postgres:password@postgres:5432/devtube
-
-JWT_SECRET=your-secret-key
-
-JWT_EXPIRES_IN=1d
-```
-
----
 
 # 🐳 Running with Docker
 
