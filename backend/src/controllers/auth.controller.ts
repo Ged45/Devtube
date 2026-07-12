@@ -1,55 +1,52 @@
-import { Request, Response } from "express";
-import * as authService from "../services/auth.services.js";
-import { uploadVideo } from "../services/auth.services.js";
-export async function register(req: Request, res: Response) {
-  try {
-    const { username, email, password } = req.body;
+import type { Request, Response } from "express";
+import { AuthService } from "../services/auth.services.js";
+import {
+  LoginSchema,
+  RegisterSchema,
+} from "../validators/auth.validator.js";
 
-    const user = await authService.register(
-      username,
-      email,
-      password
+const authService = new AuthService();
+
+export class AuthController {
+
+  async register(req: Request, res: Response) {
+
+    const data = RegisterSchema.parse(req.body);
+
+    const result =
+      await authService.register(data);
+
+    res.status(201).json(result);
+  }
+
+  async login(req: Request, res: Response) {
+
+    const data = LoginSchema.parse(req.body);
+
+    const result =
+      await authService.login(data);
+
+    res.json(result);
+  }
+
+  async upload(req: Request, res: Response) {
+    const file = (req as any).file;
+
+    if (!file) {
+      return res.status(400).json({ message: "Video is required" });
+    }
+
+    const { title, description } = req.body;
+
+    const user = (req as any).user;
+
+    const video = await authService.uploadVideo(
+      title,
+      description,
+      file.filename,
+      user.userId
     );
 
-    return res.status(201).json(user);
-  } catch (error) {
-    return res.status(400).json({
-      message:
-        error instanceof Error ? error.message : "Registration failed",
-    });
+    res.status(201).json(video);
   }
-}
-
-export async function login(req: Request, res: Response) {
-  try {
-    const { email, password } = req.body;
-
-    const result = await authService.login(email, password);
-
-    return res.json(result);
-  } catch (error) {
-    return res.status(401).json({
-      message:
-        error instanceof Error ? error.message : "Login failed",
-    });
-  }
-}
-
-export async function upload(req, res) {
-  const file = req.file;
-
-  if (!file) {
-    return res.status(400).json({
-      message: "Video is required",
-    });
-  }
-
-  const video = await uploadVideo(
-    req.body.title,
-    req.body.description,
-    file.filename,
-    req.user!.id
-  );
-
-  return res.status(201).json(video);
 }

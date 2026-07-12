@@ -1,0 +1,1 @@
+{"version":3,"file":"video.services.js","sourceRoot":"","sources":["video.services.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,YAAY,EAAE,MAAM,qCAAqC,CAAC;AAEjF,MAAM,OAAO,YAAY;IACvB,KAAK,CAAC,UAAU;QACd,OAAO,YAAY,EAAE,CAAC;IACxB,CAAC;IAED,KAAK,CAAC,QAAQ,CAAC,EAAU;QACvB,OAAO,YAAY,CAAC,EAAE,CAAC,CAAC;IAC1B,CAAC;CACF"}

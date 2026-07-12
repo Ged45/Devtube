@@ -1,13 +1,41 @@
-import prisma from "../config/prisma.js";
+import { prisma } from "../lib/prisma.js";
 
 export function createVideo(data: {
   title: string;
-  description?: string;
+  description: string;
   filename: string;
   userId: number;
+  thumbnail?: string | null;
+  duration: number;
 }) {
   return prisma.video.create({
     data,
   });
 }
+export async function getAllVideos() {
+  return prisma.video.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+        },
+      },
+    },
+  });
+}
 
+export async function getVideoById(id: number) {
+  return prisma.video.findUnique({
+    where: { id },
+    include: {
+      user: {
+        select: {
+          id: true,
+          username: true,
+        },
+      },
+    },
+  });
+}

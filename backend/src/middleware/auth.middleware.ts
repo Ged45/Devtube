@@ -1,45 +1,36 @@
-import { Request, Response, NextFunction } from "express";
-import { verifyToken } from "../utils/jwt.js";
-import { findById } from "../repositories/user.repository.js";
+import type {
+  NextFunction,
+  Request,
+  Response,
+} from "express";
 
-export async function authenticate(
-    req: Request,
-    res: Response,
-    next: NextFunction
+import { verifyAccessToken } from "../utils/jwt.js";
+
+import { AppError } from "../utils/app-error.js";
+
+export function authenticate(
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) {
-    try {
 
-        const authHeader = req.headers.authorization;
+  const header =
+    req.headers.authorization;
 
-        if (!authHeader) {
-            return res.status(401).json({
-                message: "Authentication required",
-            });
-        }
+  if (!header) {
+    throw new AppError(
+      401,
+      "Missing Authorization Header"
+    );
+  }
 
-        const token = authHeader.split(" ")[1];
+  const token =
+    header.replace("Bearer ", "");
 
-        const payload = verifyToken(token);
+  const payload =
+    verifyAccessToken(token);
 
-        const user = await findById(payload.userId);
+  (req as any).user = payload;
 
-        if (!user) {
-            return res.status(401).json({
-                message: "User not found",
-            });
-        }
-
-        req.user = user;
-
-        next();
-
-    } catch {
-
-        return res.status(401).json({
-
-            message:"Invalid token"
-
-        });
-
-    }
+  next();
 }

@@ -1,19 +1,20 @@
 import jwt from "jsonwebtoken";
+import { env } from "../config/env.js";
 
-interface TokenPayload {
+export interface JwtPayload {
   userId: number;
   email: string;
 }
 
-export function generateToken(payload: TokenPayload): string {
-  return jwt.sign(payload, process.env.JWT_SECRET!, {
-    expiresIn: process.env.JWT_EXPIRES_IN || "1d",
-  });
+const jwtSecret = env.JWT_SECRET as string;
+const jwtOptions = {
+  expiresIn: env.JWT_EXPIRES_IN as unknown,
+} as import("jsonwebtoken").SignOptions;
+
+export function generateAccessToken(payload: JwtPayload): string {
+  return jwt.sign(payload, jwtSecret, jwtOptions);
 }
 
-export function verifyToken(token: string): TokenPayload {
-  return jwt.verify(
-    token,
-    process.env.JWT_SECRET!
-  ) as TokenPayload;
+export function verifyAccessToken(token: string): JwtPayload {
+  return jwt.verify(token, jwtSecret) as JwtPayload;
 }

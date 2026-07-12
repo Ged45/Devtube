@@ -17,3 +17,4 @@ npm-debug.log*
 # Editor / OS files
 .vscode/
 .DS_Store
+/src/generated/prisma

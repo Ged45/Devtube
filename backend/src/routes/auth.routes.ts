@@ -1,19 +1,25 @@
 import { Router } from "express";
-import * as authController from "../controllers/auth.controller.js";
+import { AuthController } from "../controllers/auth.controller.js";
 import { authenticate } from "../middleware/auth.middleware.js";
-import { upload } from "../controllers/auth.controller.js";
+import { upload } from "../middleware/upload.middleware.js";
 
+const controller = new AuthController();
 
-const router = Router();
+export const authRouter = Router();
 
-router.post("/register", authController.register);
-router.post("/login", authController.login);
+authRouter.post(
+  "/register",
+  controller.register.bind(controller)
+);
 
-export default router;
+authRouter.post(
+  "/login",
+  controller.login.bind(controller)
+);
 
-router.post(
-  "/",
+authRouter.post(
+  "/upload",
   authenticate,
   upload.single("video"),
-  uploadController.upload
+  controller.upload.bind(controller)
 );

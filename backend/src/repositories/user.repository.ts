@@ -1,19 +1,28 @@
-import prisma from "../config/prisma.js";
+import { prisma } from "../lib/prisma.js";
+import type { Prisma, User } from "@prisma/client";
 
-export async function findByEmail(email: string) {
-  return prisma.user.findUnique({
-    where: {
-      email,
-    },
-  });
-}
+export class UserRepository {
+  async findById(id: number): Promise<User | null> {
+    return prisma.user.findUnique({
+      where: { id },
+    });
+  }
 
-export async function createUser(data: {
-  username: string;
-  email: string;
-  password: string;
-}) {
-  return prisma.user.create({
-    data,
-  });
+  async findByEmail(email: string): Promise<User | null> {
+    return prisma.user.findUnique({
+      where: { email },
+    });
+  }
+
+  async findByUsername(username: string): Promise<User |null> {
+    return prisma.user.findUnique({
+      where: { username },
+    });
+  }
+
+  async create(data: Prisma.UserCreateInput): Promise<User> {
+    return prisma.user.create({
+      data,
+    });
+  }
 }
