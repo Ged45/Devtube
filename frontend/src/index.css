@@ -77,6 +77,64 @@ textarea {
   font: inherit;
 }
 
+:root {
+  color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
+.dark body,
+.dark .bg-slate-50 {
+  background-color: #0f172a;
+}
+
+.dark .bg-white {
+  background-color: #111827;
+}
+
+.dark .bg-slate-100 {
+  background-color: #1e293b;
+}
+
+.dark .bg-slate-200,
+.dark .bg-slate-300 {
+  background-color: #334155;
+}
+
+.dark .bg-slate-900 {
+  background-color: #334155;
+}
+
+.dark .hover\:bg-slate-100:hover,
+.dark .hover\:bg-slate-800:hover {
+  background-color: #475569;
+}
+
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .border-slate-300 {
+  border-color: #334155;
+}
+
+.dark .text-slate-900 {
+  color: #f8fafc;
+}
+
+.dark .text-slate-700 {
+  color: #e2e8f0;
+}
+
+.dark .text-slate-600,
+.dark .text-slate-500 {
+  color: #94a3b8;
+}
+
+.dark .placeholder\:text-slate-400::placeholder {
+  color: #64748b;
+}
+
 h1,
 h2 {
   font-family: var(--heading);

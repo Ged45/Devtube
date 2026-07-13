@@ -3,6 +3,7 @@ import { AuthService } from "../services/auth.services.js";
 import {
   LoginSchema,
   RegisterSchema,
+  UpdateProfileSchema,
 } from "../validators/auth.validator.js";
 
 const authService = new AuthService();
@@ -48,5 +49,16 @@ export class AuthController {
     );
 
     res.status(201).json(video);
+  }
+
+  async profile(req: Request, res: Response) {
+    const user = await authService.getProfile((req as any).user.userId);
+    res.json(user);
+  }
+
+  async updateProfile(req: Request, res: Response) {
+    const data = UpdateProfileSchema.parse(req.body);
+    const user = await authService.updateProfile((req as any).user.userId, data);
+    res.json(user);
   }
 }

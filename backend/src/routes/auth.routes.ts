@@ -17,6 +17,9 @@ authRouter.post(
   controller.login.bind(controller)
 );
 
+authRouter.get("/me", authenticate, controller.profile.bind(controller));
+authRouter.patch("/me", authenticate, controller.updateProfile.bind(controller));
+
 authRouter.post(
   "/upload",
   authenticate,

@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { SearchIcon, UploadIcon, UserCircleIcon } from "./icons";
+import ThemeToggle from "./ThemeToggle";
 
-export default function Header() {
+type HeaderProps = {
+  isDark: boolean;
+  onThemeToggle: () => void;
+};
+
+export default function Header({ isDark, onThemeToggle }: HeaderProps) {
   const [q, setQ] = useState("");
 
   return (
@@ -35,6 +41,7 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-3 text-sm md:text-base">
+          <ThemeToggle isDark={isDark} onToggle={onThemeToggle} />
           <Link
             to="/upload"
             className="hidden items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-slate-700 transition hover:bg-slate-100 md:flex"
@@ -42,9 +49,14 @@ export default function Header() {
             <UploadIcon className="h-4 w-4 text-slate-700" />
             Upload
           </Link>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 text-slate-600">
+          <Link
+            to="/profile"
+            aria-label="Profile settings"
+            title="Profile settings"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200 text-slate-600 transition hover:bg-slate-100"
+          >
             <UserCircleIcon className="h-5 w-5" />
-          </div>
+          </Link>
         </div>
       </div>
     </header>

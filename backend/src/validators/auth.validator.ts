@@ -20,3 +20,14 @@ export const LoginSchema = z.object({
     password: z.string()
 
 });
+
+export const UpdateProfileSchema = z.object({
+  email: z.email().optional(),
+  username: z.string().min(3).max(20).optional(),
+  firstName: z.string().max(50).optional(),
+  lastName: z.string().max(50).optional(),
+}).refine((data) => Object.keys(data).length > 0, {
+  message: "Provide at least one profile field to update",
+});
+
+export type UpdateProfileDto = z.infer<typeof UpdateProfileSchema>;

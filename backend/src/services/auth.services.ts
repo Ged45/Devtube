@@ -1,5 +1,7 @@
 import { UserRepository } from "../repositories/user.repository.js";
 import type { RegisterDto, LoginDto } from "../types/auth.types.js";
+import type { UpdateProfileDto } from "../validators/auth.validator.js";
+import type { Prisma } from "../generated/prisma/index.js";
 import { hashPassword, comparePassword } from "../utils/password.js";
 import { generateAccessToken } from "../utils/jwt.js";
 import { AppError } from "../utils/app-error.js";
@@ -10,6 +12,11 @@ export class AuthService {
   constructor(
     private readonly userRepository = new UserRepository()
   ) {}
+
+  private publicUser(user: { password: string } & Record<string, unknown>) {
+    const { password, ...profile } = user;
+    return profile;
+  }
 
   async register(data: RegisterDto) {
 
@@ -43,7 +50,7 @@ export class AuthService {
     });
 
     return {
-      user,
+      user: this.publicUser(user),
       token,
     };
   }
@@ -83,8 +90,41 @@ export class AuthService {
     });
 
     return {
-      user,
+      user: this.publicUser(user),
       token,
     };
+  }
+
+  async getProfile(userId: number) {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new AppError(404, "User not found");
+    }
+    return this.publicUser(user);
+  }
+
+  async updateProfile(userId: number, data: UpdateProfileDto) {
+    if (data.email) {
+      const existing = await this.userRepository.findByEmail(data.email);
+      if (existing && existing.id !== userId) {
+        throw new AppError(409, "Email already exists");
+      }
+    }
+
+    if (data.username) {
+      const existing = await this.userRepository.findByUsername(data.username);
+      if (existing && existing.id !== userId) {
+        throw new AppError(409, "Username already exists");
+      }
+    }
+
+    const updateData: Prisma.UserUpdateInput = {};
+    if (data.email !== undefined) updateData.email = data.email;
+    if (data.username !== undefined) updateData.username = data.username;
+    if (data.firstName !== undefined) updateData.firstName = data.firstName;
+    if (data.lastName !== undefined) updateData.lastName = data.lastName;
+
+    const user = await this.userRepository.update(userId, updateData);
+    return this.publicUser(user);
   }
 }

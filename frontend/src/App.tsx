@@ -1,9 +1,11 @@
+import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Upload from "./pages/Upload";
 import Home from "./pages/Home";
 import Watch from "./pages/Watch";
+import ProfileSettings from "./pages/ProfileSettings";
 import { HomeIcon, UploadIcon } from "./components/icons";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { useAuth } from "./hooks/useAuth";
@@ -13,11 +15,17 @@ import "./App.css";
 
 export default function App() {
   const { isAuthenticated, logout } = useAuth();
+  const [isDark, setIsDark] = useState(() => localStorage.getItem("theme") === "dark");
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDark);
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+  }, [isDark]);
 
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-slate-50 text-slate-900">
-        <Header />
+        <Header isDark={isDark} onThemeToggle={() => setIsDark((value) => !value)} />
 
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
           <div className="rounded-[2rem] border border-slate-200 bg-white p-4 shadow-sm md:p-6">
@@ -62,6 +70,14 @@ export default function App() {
                   element={
                     <ProtectedRoute>
                       <Upload />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/profile"
+                  element={
+                    <ProtectedRoute>
+                      <ProfileSettings />
                     </ProtectedRoute>
                   }
                 />
