@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { LikeIcon, ShareIcon, BookmarkIcon, VideoIcon } from "../components/icons";
-import { fetchVideo } from "../services/video";
+import { fetchVideo, fetchVideos, videoFileUrl } from "../services/video";
 
 type Video = {
   id: number;
@@ -25,6 +25,7 @@ const placeholderVideo = {
 export default function Watch() {
   const { id } = useParams();
   const [video, setVideo] = useState<Video | null>(null);
+  const [upNext, setUpNext] = useState<Video[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,6 +41,10 @@ export default function Watch() {
       .then((data) => setVideo(data))
       .catch((err) => setError(err?.response?.data?.message || err?.message || "Unable to load video"))
       .finally(() => setLoading(false));
+
+    fetchVideos()
+      .then((videos: Video[]) => setUpNext(videos.filter((item) => item.id !== videoId).slice(0, 3)))
+      .catch(() => setUpNext([]));
   }, [id]);
 
   const currentVideo = video
@@ -71,9 +76,15 @@ export default function Watch() {
           </div>
 
           <div className="overflow-hidden rounded-[1.5rem] bg-slate-900 shadow-lg">
-            <div className="aspect-video flex items-center justify-center text-white text-xl">
-              {loading ? "Loading video..." : video ? `Video Player #${id}` : "Video Preview"}
-            </div>
+            {loading ? (
+              <div className="aspect-video flex items-center justify-center text-xl text-white">Loading video...</div>
+            ) : video ? (
+              <video className="aspect-video w-full bg-black" controls preload="metadata" src={videoFileUrl(video.filename)}>
+                Your browser does not support video playback.
+              </video>
+            ) : (
+              <div className="aspect-video flex items-center justify-center text-xl text-white">Video unavailable</div>
+            )}
           </div>
 
           <div className="mt-6 space-y-6">
@@ -137,17 +148,19 @@ export default function Watch() {
             <div className="rounded-[1.5rem] border border-slate-200 bg-white p-5 shadow-sm">
               <h3 className="text-base font-semibold text-slate-900">Up next</h3>
               <div className="mt-4 space-y-3">
-                {Array.from({ length: 3 }).map((_, index) => (
+                {upNext.length === 0 ? (
+                  <p className="text-sm text-slate-500">No other uploaded videos yet.</p>
+                ) : upNext.map((item) => (
                   <Link
-                    key={index}
-                    to={`/watch/${Number(id ?? 0) + index + 1}`}
+                    key={item.id}
+                    to={`/watch/${item.id}`}
                     className="flex items-start gap-3 rounded-2xl p-3 transition hover:bg-slate-50"
                   >
                     <div className="relative h-20 w-32 overflow-hidden rounded-xl bg-slate-200">
                       <VideoIcon className="absolute left-1 top-1 h-5 w-5 text-white opacity-90" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-semibold text-slate-900">Related video title {index + 1}</p>
+                      <p className="text-sm font-semibold text-slate-900">{item.title}</p>
                       <p className="mt-2 text-xs text-slate-500">Devtube • 250K views</p>
                     </div>
                   </Link>

@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { uploadVideo } from "../services/video";
 import { UploadIcon } from "../components/icons";
 
 export default function Upload() {
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -13,9 +15,9 @@ export default function Upload() {
     if (!file) return setMessage("Select a file");
     try {
       await uploadVideo({ title, description, file });
-      setMessage("Upload successful");
+      navigate("/");
     } catch (err: any) {
-      setMessage(err?.message || "Upload failed");
+      setMessage(err?.response?.data?.message || err?.message || "Upload failed");
     }
   }
 

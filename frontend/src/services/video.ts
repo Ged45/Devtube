@@ -17,3 +17,7 @@ export function fetchVideos() {
 export function fetchVideo(id: number) {
   return api.get(`/videos/${id}`).then((r) => r.data);
 }
+
+export function videoFileUrl(filename: string) {
+  return `/uploads/videos/${encodeURIComponent(filename)}`;
+}

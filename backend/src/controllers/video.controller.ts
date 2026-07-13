@@ -1,20 +1,28 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { VideoService } from "../services/video.services.js";
 
-const videoService = new VideoService();
-
 export class VideoController {
-  async list(req: Request, res: Response) {
-    const videos = await videoService.listVideos();
-    res.json(videos);
+  constructor(private readonly videoService: VideoService = new VideoService()) {}
+
+  async list(req: Request, res: Response, next: NextFunction) {
+    try {
+      const videos = await this.videoService.listVideos();
+      res.json(videos);
+    } catch (error) {
+      next(error);
+    }
   }
 
-  async get(req: Request, res: Response) {
-    const videoId = Number(req.params.id);
-    const video = await videoService.getVideo(videoId);
-    if (!video) {
-      return res.status(404).json({ message: "Video not found" });
+  async get(req: Request, res: Response, next: NextFunction) {
+    try {
+      const videoId = Number(req.params.id);
+      const video = await this.videoService.getVideo(videoId);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      res.json(video);
+    } catch (error) {
+      next(error);
     }
-    res.json(video);
   }
 }

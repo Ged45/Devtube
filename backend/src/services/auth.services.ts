@@ -48,14 +48,12 @@ export class AuthService {
     };
   }
 
-  async uploadVideo(title: string, description: string | undefined, filename: string, userId: number) {
+  async uploadVideo(title: string, description: string | undefined, filename: string, uploaderId: number) {
     const video = await createVideo({
       title,
       description: description ?? "",
       filename,
-      userId,
-      duration: 0,
-      thumbnail: null,
+      uploaderId,
     });
     return video;
   }

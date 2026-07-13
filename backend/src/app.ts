@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+import path from "path";
 import { errorHandler } from "./middleware/error.middleware.js";
 
 import { healthRouter } from "./routes/health.route.js";
@@ -19,6 +20,8 @@ app.use(morgan("dev"));
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
+
+app.use("/uploads", express.static(path.resolve("uploads")));
 
 app.use("/health", healthRouter);
 app.use("/api/auth", authRouter);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import VideoCard from "../components/VideoCard";
 import { fetchVideos } from "../services/video";
@@ -17,12 +17,20 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const loadVideos = useCallback(() => {
+    setLoading(true);
+    setError(null);
     fetchVideos()
       .then((data) => setVideos(data))
       .catch((err) => setError(err?.message || "Unable to load videos"))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    loadVideos();
+    window.addEventListener("focus", loadVideos);
+    return () => window.removeEventListener("focus", loadVideos);
+  }, [loadVideos]);
 
   return (
     <main className="flex-1">
@@ -44,6 +52,13 @@ export default function Home() {
                 {label}
               </button>
             ))}
+            <button
+              type="button"
+              onClick={loadVideos}
+              className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-100"
+            >
+              Refresh
+            </button>
           </div>
         </div>
 

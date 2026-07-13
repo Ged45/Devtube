@@ -1,6 +1,7 @@
 import multer from "multer";
 import path from "path";
 import crypto from "crypto";
+import { AppError } from "../utils/app-error.js";
 
 const storage = multer.diskStorage({
 
@@ -24,14 +25,15 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  const allowed = [
-    "video/mp4",
-    "video/webm",
-    "video/quicktime",
-  ];
+  const supportedExtensions = new Set([
+    ".3gp", ".avi", ".m4v", ".mkv", ".mov", ".mp4", ".mpeg", ".mpg", ".webm",
+  ]);
+  const extension = path.extname(file.originalname).toLowerCase();
+  const isVideo = file.mimetype.startsWith("video/") ||
+    (file.mimetype === "application/octet-stream" && supportedExtensions.has(extension));
 
-  if (!allowed.includes(file.mimetype)) {
-    return cb(new Error("Unsupported File"));
+  if (!isVideo) {
+    return cb(new AppError(415, "Please select a supported video file."));
   }
 
   cb(null, true);
@@ -46,5 +48,3 @@ export const upload = multer({
   fileFilter,
   limits,
 });
-  
-  

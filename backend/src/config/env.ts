@@ -1,11 +1,12 @@
 import dotenv from "dotenv";
 
-dotenv.config();
+dotenv.config({ override: false });
 
 export const env = {
   PORT: Number(process.env.PORT) || 5000,
 
-  DATABASE_URL: process.env.DATABASE_URL || "",
+  DATABASE_URL:
+    process.env.DATABASE_URL || "postgresql://postgres:password@localhost:5432/devtube?schema=public",
 
   JWT_SECRET: process.env.JWT_SECRET || "",
 
